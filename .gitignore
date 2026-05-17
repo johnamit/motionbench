@@ -15,7 +15,6 @@ env/
 .DS_Store
 Thumbs.db
 
-archive/**
 
 data/**
 !data/.gitkeep
@@ -24,3 +23,5 @@ models/**
 !models/.gitkeep
 !models/*/
 !models/*/train.py
+
+archive/**
