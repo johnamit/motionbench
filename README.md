@@ -1,4 +1,4 @@
-<img src="YOUR_TITLE_IMAGE_PATH.png" alt="MotionBench" width="900"><br>
+<img src="assets/motionbench.png" alt="MotionBench" width="900"><br>
 
 [<img src="https://img.shields.io/badge/HuggingFace-Dataset-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Dataset on Hugging Face"/>](YOUR_HF_DATASET_URL)
 &nbsp;&nbsp;
