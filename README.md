@@ -25,12 +25,17 @@ The runtime pipeline is simple. It captures frames, extracts pose-based features
 The active project layout is intentionally minimal. Core work happens in `data/`, `models/`, `scripts/`, and `results/`. Older or non-essential files are moved to `archive/` to keep the main repository clear and easy to review.
 
 ## Dataset
-Heavy artifacts such as expanded datasets and model-related files can be stored and shared through Hugging Face:
+This repo stays lightweight on GitHub. Download the dataset files from Hugging Face and place them in `data/`.
 
 - `YOUR_HF_DATASET_URL`
-- `YOUR_HF_MODELS_URL`
 
-For local usage, keep dataset and split files under `data/`. The current workflow expects fixed sequence splits (`train`, `val`, `test_internal`) and optionally a separate home/generalization test split.
+```bash
+git clone YOUR_HF_DATASET_URL data
+```
+
+For local usage, keep split files under `data/`.
+
+The workflow expects fixed sequence splits (`train`, `val`, `test_internal`) and optionally a separate home/generalization test split.
 
 Expected split files:
 - `data/train_sequences.csv`
@@ -45,7 +50,15 @@ python scripts/preprocess/create_fixed_splits.py --input-file data/train_sequenc
 ```
 
 ## Models
-This project includes six sequence models that cover recurrent, convolutional-temporal, and graph-inspired approaches. The goal is not only to compare accuracy, but also to compare practical behavior such as latency and stability in runtime settings.
+Download trained model files from Hugging Face and place them in `models/`.
+
+- `YOUR_HF_MODELS_URL`
+
+```bash
+git clone YOUR_HF_MODELS_URL models
+```
+
+This project includes six sequence models with different strengths. Some are strong on temporal memory, some are better for latency, and some are better at capturing structured feature relationships.
 
 **BiLSTM**
 The bidirectional LSTM processes each sequence in forward and backward directions within the input window, so the classifier can use context from both ends of the motion segment. This is useful when discriminative movement cues are distributed across the full window rather than concentrated at one time point.
