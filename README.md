@@ -56,22 +56,22 @@ git clone https://huggingface.co/johnamit/motionbench-models models
 
 This project includes six sequence models with different strengths. Some are strong on temporal memory, some are better for latency, and some are better at capturing structured feature relationships.
 
-**BiLSTM**
+**BiLSTM:**
 The bidirectional LSTM processes each sequence in forward and backward directions within the input window, so the classifier can use context from both ends of the motion segment. This helps when important movement details are spread across the whole sequence, not just a single frame.
 
-**LSTM**  
+**LSTM:**  
 Unidirectional LSTM reads movement step by step in time. It is a simple and reliable sequence model, so it works well as a strong baseline for exercise classification while keeping runtime reasonable.
 
-**GRU**
+**GRU:**
 The GRU uses gating similar to LSTM but with fewer internal components, which can reduce parameter count and improve efficiency. In practice, it is a strong candidate when you want robust sequence modeling with lighter recurrent overhead.
 
-**TCN**
+**TCN:**
 The temporal convolutional network uses dilated 1D convolutions and residual blocks to to learn patterns over short and long time ranges. Because convolutional operations are parallelizable, it is often fast at inference, which makes it a good option when responsiveness matters.
 
-**CNN-BiLSTM**
+**CNN-BiLSTM:**
 This hybrid architecture first applies temporal convolutions to capture short local motion patterns, then a BiLSTM models how those patterns evolve over time. This gives both local detail and sequence context.
 
-**ST-GCN-inspired (feature-graph variant)**
+**ST-GCN-inspired (feature-graph variant):**
 This ST-GCN-style model treats features as connected nodes and learns both their relationships and how they change over time. It can help when interactions between pose features are important for classification.
 
 ## Training
