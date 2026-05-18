@@ -59,7 +59,7 @@ This project includes six sequence models with different strengths. Some are str
 **BiLSTM:**
 The bidirectional LSTM processes each sequence in forward and backward directions within the input window, so the classifier can use context from both ends of the motion segment. This helps when important movement details are spread across the whole sequence, not just a single frame.
 
-**LSTM:**  
+**LSTM:**
 Unidirectional LSTM reads movement step by step in time. It is a simple and reliable sequence model, so it works well as a strong baseline for exercise classification while keeping runtime reasonable.
 
 **GRU:**
