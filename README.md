@@ -1,8 +1,8 @@
 <img src="assets/motionbench.png" alt="MotionBench" width="900"><br>
 
-[<img src="https://img.shields.io/badge/HuggingFace-Dataset-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Dataset on Hugging Face"/>](YOUR_HF_DATASET_URL)
-&nbsp;&nbsp;
-[<img src="https://img.shields.io/badge/HuggingFace-Models-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Models on Hugging Face"/>](YOUR_HF_MODELS_URL)
+[<img src="https://img.shields.io/badge/HuggingFace-Dataset-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Dataset on Hugging Face"/>](https://huggingface.co/datasets/johnamit/motionbench-data)
+
+[<img src="https://img.shields.io/badge/HuggingFace-Models-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Models on Hugging Face"/>](https://huggingface.co/johnamit/motionbench-models)
 
 MotionBench is a real-time pose-based exercise recognition project designed for practical local usage. It classifies exercise motion from short temporal windows, estimates repetition counts with a deterministic finite-state method, and reports similarity against class-level motion centroids.
 
@@ -27,10 +27,8 @@ The active project layout is intentionally minimal. Core work happens in `data/`
 ## Dataset
 This repo stays lightweight on GitHub. Download the dataset files from Hugging Face and place them in `data/`.
 
-- `YOUR_HF_DATASET_URL`
-
 ```bash
-git clone YOUR_HF_DATASET_URL data
+git clone https://huggingface.co/datasets/johnamit/motionbench-data data
 ```
 
 For local usage, keep split files under `data/`.
@@ -52,31 +50,29 @@ python scripts/preprocess/create_fixed_splits.py --input-file data/train_sequenc
 ## Models
 Download trained model files from Hugging Face and place them in `models/`.
 
-- `YOUR_HF_MODELS_URL`
-
 ```bash
-git clone YOUR_HF_MODELS_URL models
+git clone https://huggingface.co/johnamit/motionbench-models models
 ```
 
 This project includes six sequence models with different strengths. Some are strong on temporal memory, some are better for latency, and some are better at capturing structured feature relationships.
 
 **BiLSTM**
-The bidirectional LSTM processes each sequence in forward and backward directions within the input window, so the classifier can use context from both ends of the motion segment. This is useful when discriminative movement cues are distributed across the full window rather than concentrated at one time point.
+The bidirectional LSTM processes each sequence in forward and backward directions within the input window, so the classifier can use context from both ends of the motion segment. This helps when important movement details are spread across the whole sequence, not just a single frame.
 
-**LSTM**
-The unidirectional LSTM models temporal dependencies in a simpler recurrent setup. It is often a strong baseline for motion classification and can offer a good tradeoff between model capacity and runtime cost.
+**LSTM**  
+Unidirectional LSTM reads movement step by step in time. It is a simple and reliable sequence model, so it works well as a strong baseline for exercise classification while keeping runtime reasonable.
 
 **GRU**
 The GRU uses gating similar to LSTM but with fewer internal components, which can reduce parameter count and improve efficiency. In practice, it is a strong candidate when you want robust sequence modeling with lighter recurrent overhead.
 
 **TCN**
-The temporal convolutional network uses dilated 1D convolutions and residual blocks to capture short- and long-range temporal structure. Because convolutional operations are parallelizable, TCNs can perform well in latency-oriented settings.
+The temporal convolutional network uses dilated 1D convolutions and residual blocks to to learn patterns over short and long time ranges. Because convolutional operations are parallelizable, it is often fast at inference, which makes it a good option when responsiveness matters.
 
 **CNN-BiLSTM**
-This hybrid architecture first applies temporal convolutions to extract local motion patterns and then uses a BiLSTM to model higher-level sequence context. It combines local feature extraction with recurrent temporal integration.
+This hybrid architecture first applies temporal convolutions to capture short local motion patterns, then a BiLSTM models how those patterns evolve over time. This gives both local detail and sequence context.
 
-**ST-GCN (feature-graph variant)**
-The ST-GCN-style model treats the per-frame feature dimension as a graph-like structure and applies graph-temporal processing blocks. This can help when relationships between feature nodes are informative for classification.
+**ST-GCN-inspired (feature-graph variant)**
+This ST-GCN-style model treats features as connected nodes and learns both their relationships and how they change over time. It can help when interactions between pose features are important for classification.
 
 ## Training
 Train each model from the shared sequence splits in `data/`.
@@ -127,35 +123,59 @@ In the app you can select a model, test camera capture, start a live session, an
 ## Citations
 If you publish or present this project, cite the primary libraries and frameworks used in the pipeline.
 
-**PyTorch**
+**Bidirectional Long Short-Term Memory (BiLSTM)**
 ```bibtex
-@misc{pytorch,
-  title={PyTorch},
-  howpublished={\url{https://pytorch.org/}}
+@article{riccio2024real,
+  title={Real-time fitness exercise classification and counting from video frames},
+  author={Riccio, Riccardo},
+  journal={arXiv preprint arXiv:2411.11548},
+  year={2024}
 }
 ```
 
-**MediaPipe**
+**Gated Recurrent Unit (GRU)**
 ```bibtex
-@misc{mediapipe,
-  title={MediaPipe},
-  howpublished={\url{https://mediapipe.dev/}}
+@article{chung2014empirical,
+  title={Empirical evaluation of gated recurrent neural networks on sequence modeling},
+  author={Chung, Junyoung and Gulcehre, Caglar and Cho, KyungHyun and Bengio, Yoshua},
+  journal={arXiv preprint arXiv:1412.3555},
+  year={2014}
 }
 ```
 
-**OpenCV**
+**Temporal Convolutional Network (TCN)**
 ```bibtex
-@misc{opencv,
-  title={OpenCV},
-  howpublished={\url{https://opencv.org/}}
+@inproceedings{lea2017temporal,
+  title={Temporal convolutional networks for action segmentation and detection},
+  author={Lea, Colin and Flynn, Michael D and Vidal, Rene and Reiter, Austin and Hager, Gregory D},
+  booktitle={proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  pages={156--165},
+  year={2017}
 }
 ```
 
-**scikit-learn**
+**Spatial Temporal Graph Convolutional Network**
 ```bibtex
-@misc{scikitlearn,
-  title={scikit-learn},
-  howpublished={\url{https://scikit-learn.org/}}
+@inproceedings{yan2018spatial,
+  title={Spatial temporal graph convolutional networks for skeleton-based action recognition},
+  author={Yan, Sijie and Xiong, Yuanjun and Lin, Dahua},
+  booktitle={Proceedings of the AAAI conference on artificial intelligence},
+  volume={32},
+  number={1},
+  year={2018}
+}
+```
+
+**CNN BiLSTM Hybrid**
+```bibtex
+@online{dhomane2024cnnbilstm,
+  author  = {Shreyas Dhomane},
+  title   = {CNN + BiLSTM Architecture: A Practical Guide},
+  year    = {2024},
+  month   = oct,
+  day     = {23},
+  url     = {https://medium.com/@shreyas.dhomane22/cnn-bilstm-architecture-a-practical-guide-c81829022820},
+  note    = {Medium article. Accessed: 2026-04-22}
 }
 ```
 
