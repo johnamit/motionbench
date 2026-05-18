@@ -121,7 +121,6 @@ streamlit run scripts/app/motionbench.py
 In the app you can select a model, test camera capture, start a live session, and monitor predicted class, repetition count, and similarity score.
 
 ## Citations
-If you publish or present this project, cite the primary libraries and frameworks used in the pipeline.
 
 **Bidirectional Long Short-Term Memory (BiLSTM)**
 ```bibtex
