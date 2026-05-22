@@ -9,4 +9,5 @@ venv/
 env/
 data/
 results/
+models/
 *.ipynb

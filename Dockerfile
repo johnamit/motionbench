@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxext6 \
     libxrender1 \
     ffmpeg \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONUNBUFFERED=1 \
@@ -17,8 +18,13 @@ ENV PYTHONUNBUFFERED=1 \
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
+# scripts to run the app and utilities
 COPY scripts ./scripts
-COPY models ./models
+
+# Clone the models from my Hugging Face repository
+RUN git clone --depth 1 https://huggingface.co/johnamit/motionbench-models /tmp/motionbench-models \
+    && mv /tmp/motionbench-models/models /app/models \
+    && rm -rf /tmp/motionbench-models
 
 EXPOSE 7860
 
