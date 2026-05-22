@@ -1,3 +1,13 @@
+---
+title: MotionBench
+emoji: 🏋️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 <img src="assets/motionbench.png" alt="MotionBench" width="900"><br>
 
 [<img src="https://img.shields.io/badge/HuggingFace-Dataset-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Dataset on Hugging Face"/>](https://huggingface.co/datasets/johnamit/motionbench-data)
