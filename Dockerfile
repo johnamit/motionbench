@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrender1 \
     ffmpeg \
     git \
+    git-lfs \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONUNBUFFERED=1 \
@@ -23,6 +24,8 @@ COPY scripts ./scripts
 
 # Clone the models from my Hugging Face repository
 RUN git clone --depth 1 https://huggingface.co/johnamit/motionbench-models /tmp/motionbench-models \
+    && cd /tmp/motionbench-models \
+    && git lfs pull \
     && mv /tmp/motionbench-models/models /app/models \
     && rm -rf /tmp/motionbench-models
 
