@@ -22,7 +22,7 @@ MotionBench is built to run the full workflow from start to finish. You can prep
 
 The runtime pipeline is simple. It captures frames, extracts pose-based features, builds rolling windows, and predicts one of six exercise classes. It also estimates repetitions with a deterministic finite-state method and reports a centroid similarity score for live feedback.
 
-The active project layout is intentionally minimal. Core work happens in `data/`, `models/`, `scripts/`, and `results/`. Older or non-essential files are moved to `archive/` to keep the main repository clear and easy to review.
+Core work happens in `data/`, `models/`, `scripts/`, and `results/`. Older or non-essential files are moved to `archive/` to keep the main repository clear and easy to review.
 
 ## Dataset
 This repo stays lightweight on GitHub. Download the dataset files from Hugging Face and place them in `data/`.
