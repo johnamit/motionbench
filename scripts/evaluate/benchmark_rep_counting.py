@@ -1,17 +1,17 @@
 import argparse
+import sys
 from pathlib import Path
 
 import cv2
+import mediapipe as mp
 import numpy as np
 import pandas as pd
 
-from scripts.evaluate.rep_counting_methods import (
-    EXERCISE_CONFIGS,
-    FixedThresholdFSMCounter,
-    SmoothingBuffer,
-    extract_primary_angle,
-    normalize_exercise_name,
-)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from scripts.evaluate.rep_counting_methods import EXERCISE_CONFIGS, FixedThresholdFSMCounter, SmoothingBuffer, extract_primary_angle, normalize_exercise_name
 
 
 def parse_args():
@@ -23,14 +23,7 @@ def parse_args():
 
 
 def load_pose_module():
-    import mediapipe as mp
-
-    try:
-        return mp.solutions.pose
-    except AttributeError:
-        from mediapipe.python.solutions import pose as pose_module
-
-        return pose_module
+    return mp.solutions.pose
 
 
 def build_landmark_indices(mp_pose):
@@ -128,6 +121,8 @@ def main():
     landmark_indices = build_landmark_indices(mp_pose)
     per_video_rows = []
 
+    has_true_reps = "true_reps" in manifest.columns
+
     with mp_pose.Pose(
         static_image_mode=False,
         model_complexity=1,
@@ -139,7 +134,6 @@ def main():
             video_path = Path(row.video_path)
             raw_exercise = str(row.exercise_label)
             exercise_label = normalize_exercise_name(raw_exercise)
-            has_true_reps = "true_reps" in manifest.columns
             true_reps = int(row.true_reps) if has_true_reps and not pd.isna(row.true_reps) else None
 
             if exercise_label not in EXERCISE_CONFIGS:

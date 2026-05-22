@@ -1,11 +1,12 @@
-import time
 from collections import Counter, deque
-from pathlib import Path
 import sys
+import time
+from pathlib import Path
 from types import SimpleNamespace
 
 import cv2
 import joblib
+import mediapipe as mp
 import numpy as np
 import streamlit as st
 import torch
@@ -14,13 +15,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from scripts.evaluate.rep_counting_methods import (
-    EXERCISE_CONFIGS,
-    FixedThresholdFSMCounter,
-    SmoothingBuffer,
-    extract_primary_angle,
-    normalize_exercise_name,
-)
+from scripts.evaluate.rep_counting_methods import EXERCISE_CONFIGS, FixedThresholdFSMCounter, SmoothingBuffer, extract_primary_angle, normalize_exercise_name
 from scripts.realtime_eval.evaluate_realtime_webcam import (
     MODEL_SPECS,
     build_landmark_indices,
@@ -35,7 +30,6 @@ SEQUENCE_LENGTH = 30
 FEATURE_COUNT = 78
 LABEL_SMOOTHING_WINDOW = 5
 DEFAULT_MODELS_ROOT = "models"
-DEFAULT_CAMERA_INDEX = 0
 DEFAULT_PREDICTION_INTERVAL = 1.0
 CAMERA_INDEX_CANDIDATES = [0, 1, 2]
 
@@ -84,19 +78,6 @@ def read_valid_frame(capture: cv2.VideoCapture, max_reads: int = 20) -> np.ndarr
     return None
 
 
-def test_camera() -> tuple[bool, np.ndarray | None]:
-    for camera_index in CAMERA_INDEX_CANDIDATES:
-        capture = cv2.VideoCapture(camera_index)
-        if not capture.isOpened():
-            capture.release()
-            continue
-        frame_bgr = read_valid_frame(capture)
-        capture.release()
-        if frame_bgr is not None:
-            return True, cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
-    return False, None
-
-
 def open_camera_with_fallback() -> cv2.VideoCapture | None:
     for camera_index in CAMERA_INDEX_CANDIDATES:
         capture = cv2.VideoCapture(camera_index)
@@ -118,24 +99,13 @@ def main():
         st.session_state.session_active = False
 
     model_name = st.selectbox("Select Model", options=list(MODEL_SPECS.keys()), index=0)
-    controls_col_a, controls_col_b = st.columns(2)
-    with controls_col_a:
-        camera_test_clicked = st.button("Test Camera", width="stretch")
-    with controls_col_b:
-        start_clicked = st.button("Start Session", width="stretch")
-
-    if camera_test_clicked:
-        ok, preview_frame = test_camera()
-        if ok:
-            st.image(preview_frame, channels="RGB", width="stretch")
-        else:
-            st.error("Could not capture a valid camera frame.")
+    start_clicked = st.button("Start Session", width="stretch")
 
     if start_clicked:
         st.session_state.session_active = True
 
     if not st.session_state.session_active:
-        st.info("Select a model, test camera, then start session.")
+        st.info("Select a model, then start session.")
         return
 
     device, model, scaler, label_encoder = load_runtime(model_name, DEFAULT_MODELS_ROOT, feature_count=FEATURE_COUNT)
@@ -164,9 +134,9 @@ def main():
     with right_col:
         metrics_slot = st.empty()
 
-    rep_counter = None
-    rep_smoother = None
-    active_exercise_label = None
+    counter = None
+    smoother = None
+    active_exercise = None
     current_label = "none"
     current_similarity = None
     last_prediction_time = 0.0
@@ -180,31 +150,23 @@ def main():
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
     ) as pose_estimator:
-        drawing_utils = None
-        try:
-            import mediapipe as mp
-
-            drawing_utils = mp.solutions.drawing_utils
-        except Exception:
-            drawing_utils = None
+        drawing_utils = mp.solutions.drawing_utils
 
         while True:
             ok, frame_bgr = capture.read()
             if not ok:
                 break
-            elapsed = time.time()
-
             frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
-            pose_result = pose_estimator.process(frame_rgb)
+            pose = pose_estimator.process(frame_rgb)
 
-            if drawing_utils is not None and pose_result.pose_landmarks:
+            if drawing_utils is not None and pose.pose_landmarks:
                 drawing_utils.draw_landmarks(
                     frame_bgr,
-                    pose_result.pose_landmarks,
+                    pose.pose_landmarks,
                     pose_module.POSE_CONNECTIONS,
                 )
 
-            frame_features = extract_frame_features(pose_result, landmark_indices, angle_triplets)
+            frame_features = extract_frame_features(pose, landmark_indices, angle_triplets)
 
             if frame_features is not None:
                 window.append(frame_features)
@@ -212,8 +174,8 @@ def main():
                     window.pop(0)
 
             if len(window) == SEQUENCE_LENGTH and (time.time() - last_prediction_time) >= prediction_interval:
-                sequence_array = np.array(window, dtype=np.float32).reshape(1, -1)
-                scaled_flat = scaler.transform(sequence_array)
+                sequence_flat = np.array(window, dtype=np.float32).reshape(1, -1)
+                scaled_flat = scaler.transform(sequence_flat)
                 scaled = scaled_flat.reshape(1, SEQUENCE_LENGTH, FEATURE_COUNT)
                 input_tensor = torch.tensor(scaled, dtype=torch.float32, device=device)
                 with torch.inference_mode():
@@ -237,27 +199,27 @@ def main():
 
             normalized_label = normalize_exercise_name(current_label)
             current_reps = 0
-            if pose_result.pose_landmarks and normalized_label in EXERCISE_CONFIGS:
-                if normalized_label != active_exercise_label:
+            if pose.pose_landmarks and normalized_label in EXERCISE_CONFIGS:
+                if normalized_label != active_exercise:
                     config = EXERCISE_CONFIGS[normalized_label]
-                    rep_counter = FixedThresholdFSMCounter(config.fixed_low, config.fixed_high, config.min_state_frames)
-                    rep_smoother = SmoothingBuffer(config.smoothing_window)
-                    active_exercise_label = normalized_label
+                    counter = FixedThresholdFSMCounter(config.fixed_low, config.fixed_high, config.min_state_frames)
+                    smoother = SmoothingBuffer(config.smoothing_window)
+                    active_exercise = normalized_label
 
                 landmarks = {}
                 for name, index in landmark_indices.items():
-                    lm = pose_result.pose_landmarks.landmark[index]
+                    lm = pose.pose_landmarks.landmark[index]
                     landmarks[name] = np.array([lm.x, lm.y, lm.z], dtype=np.float32) if lm.visibility >= 0.5 else np.array([0.0, 0.0, 0.0], dtype=np.float32)
 
                 config = EXERCISE_CONFIGS[normalized_label]
                 raw_angle = extract_primary_angle(landmarks, config)
-                smoothed_angle = rep_smoother.update(raw_angle)
-                rep_counter.update(smoothed_angle)
-                current_reps = rep_counter.reps
+                smoothed_angle = smoother.update(raw_angle)
+                counter.update(smoothed_angle)
+                current_reps = counter.reps
             else:
-                active_exercise_label = None
-                rep_counter = None
-                rep_smoother = None
+                active_exercise = None
+                counter = None
+                smoother = None
 
             show_frame = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
             frame_slot.image(show_frame, channels="RGB", width="stretch")

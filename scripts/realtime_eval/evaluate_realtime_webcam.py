@@ -1,4 +1,5 @@
 import argparse
+import sys
 import time
 from pathlib import Path
 
@@ -10,13 +11,11 @@ import pandas as pd
 import torch
 from torch import nn
 
-from scripts.evaluate.rep_counting_methods import (
-    EXERCISE_CONFIGS,
-    FixedThresholdFSMCounter,
-    SmoothingBuffer,
-    extract_primary_angle,
-    normalize_exercise_name,
-)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from scripts.evaluate.rep_counting_methods import EXERCISE_CONFIGS, FixedThresholdFSMCounter, SmoothingBuffer, extract_primary_angle, normalize_exercise_name
 
 
 def parse_args():
@@ -195,11 +194,7 @@ MODEL_SPECS = {
 
 
 def load_pose_module():
-    try:
-        return mp.solutions.pose
-    except AttributeError:
-        from mediapipe.python.solutions import pose as pose_module
-        return pose_module
+    return mp.solutions.pose
 
 
 def build_landmark_indices(mp_pose):
