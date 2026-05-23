@@ -3,6 +3,8 @@
 [<img src="https://img.shields.io/badge/HuggingFace-Dataset-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Dataset on Hugging Face"/>](https://huggingface.co/datasets/johnamit/motionbench-data)
 &nbsp;&nbsp;
 [<img src="https://img.shields.io/badge/HuggingFace-Models-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Models on Hugging Face"/>](https://huggingface.co/johnamit/motionbench-models)
+&nbsp;&nbsp;
+[<img src="https://img.shields.io/badge/HuggingFace-Live Demo-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Demo on Hugging Face"/>](https://huggingface.co/spaces/johnamit/motionbench)
 
 MotionBench is a real-time pose-based exercise recognition project designed for practical local usage. It classifies exercise motion from short temporal windows, estimates repetition counts with a deterministic finite-state method, and reports similarity against class-level motion centroids.
 
@@ -119,6 +121,8 @@ streamlit run scripts/app/motionbench.py
 ```
 
 In the app you can select a model, test camera capture, start a live session, and monitor predicted class, repetition count, and similarity score.
+
+Please also find the [live demo](https://huggingface.co/spaces/johnamit/motionbench) of the streamlit app hosted on HuggingFace spaces via Docker. 
 
 ## Citations
 
