@@ -11,7 +11,7 @@ mediapipe==0.10.14
 
 streamlit==1.57.0
 streamlit-webrtc==0.62.4
+tornado>=6.4,<7
 
 torch==2.11.0
 torchvision==0.26.0
-
