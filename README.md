@@ -6,7 +6,7 @@
 &nbsp;&nbsp;
 [<img src="https://img.shields.io/badge/HuggingFace-Live App-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Demo on Hugging Face"/>](https://huggingface.co/spaces/johnamit/motionbench)
 &nbsp;&nbsp;
-[<img src="https://img.shields.io/badge/Google_Drive-Demo Videos-black?style=for-the-badge&logo=google%20drive&logoColor=white&labelColor=4285F4" alt="View Demo on Hugging Face"/>](https://huggingface.co/spaces/johnamit/motionbench)
+[<img src="https://img.shields.io/badge/Google_Drive-Demo Videos-black?style=for-the-badge&logo=google%20drive&logoColor=white&labelColor=4285F4" alt="View Demo on Hugging Face"/>](https://drive.google.com/drive/folders/1DHvUd81QcKR6cVVvB1eRToOgxgm29lU_?usp=sharing)
 
 MotionBench is a real-time pose-based exercise recognition project designed for practical local usage. It classifies exercise motion from short temporal windows, estimates repetition counts with a deterministic finite-state method, and reports similarity against class-level motion centroids.
 
