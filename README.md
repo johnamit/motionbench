@@ -4,9 +4,9 @@
 &nbsp;&nbsp;
 [<img src="https://img.shields.io/badge/HuggingFace-Models-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Models on Hugging Face"/>](https://huggingface.co/johnamit/motionbench-models)
 &nbsp;&nbsp;
-[<img src="https://img.shields.io/badge/HuggingFace-Live-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Demo on Hugging Face"/>](https://huggingface.co/spaces/johnamit/motionbench)
+[<img src="https://img.shields.io/badge/HuggingFace-Live App-black?style=for-the-badge&logo=huggingface&logoColor=FFD21E&labelColor=ff7f1e" alt="View Demo on Hugging Face"/>](https://huggingface.co/spaces/johnamit/motionbench)
 &nbsp;&nbsp;
-[<img src="https://img.shields.io/badge/Google_Drive-Videos-black?style=for-the-badge&logo=google%20drive&logoColor=white&labelColor=4285F4" alt="View Demo on Hugging Face"/>](https://huggingface.co/spaces/johnamit/motionbench)
+[<img src="https://img.shields.io/badge/Google_Drive-Demo Videos-black?style=for-the-badge&logo=google%20drive&logoColor=white&labelColor=4285F4" alt="View Demo on Hugging Face"/>](https://huggingface.co/spaces/johnamit/motionbench)
 
 MotionBench is a real-time pose-based exercise recognition project designed for practical local usage. It classifies exercise motion from short temporal windows, estimates repetition counts with a deterministic finite-state method, and reports similarity against class-level motion centroids.
 
