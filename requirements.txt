@@ -10,6 +10,8 @@ opencv-python==4.13.0.92
 mediapipe==0.10.14
 
 streamlit==1.57.0
+streamlit-webrtc==0.62.4
 
 torch==2.11.0
 torchvision==0.26.0
+
