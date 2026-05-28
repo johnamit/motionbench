@@ -115,16 +115,35 @@ Run realtime webcam evaluation (CLI):
 python scripts/realtime_eval/evaluate_realtime_webcam.py --model-name bilstm --models-root models --output-dir results/eval_realtime
 ```
 
-## Streamlit App
-Launch the local Streamlit interface:
+## Run MotionBench
+### Option 1: Linux Docker (local webcam)
+Use this when you want camera input from /dev/video0 inside Docker. Works for Linux.
 
+```bash
+docker build -t motionbench-space .
+docker run --rm -p 7860:7860 --device=/dev/video0:/dev/video0 motionbench-space
+```
+### Option 2: Local Streamlit Run (Windows / macOS / Linux)
+Use this to run directly on your machine (recommended for Windows/macOS webcam support).
+
+First, clone model weights from Hugging Face and replace the local models/ folder with the cloned models/ folder:
+```bash
+git clone https://huggingface.co/johnamit/motionbench-models
+```
+Then create the environment:
+```bash
+conda create -n motionbench python=3.11 -y
+conda activate motionbench
+pip install -r requirements.txt
+```
+Then run the app:
 ```bash
 streamlit run scripts/app/motionbench.py
 ```
 
-In the app you can select a model, test camera capture, start a live session, and monitor predicted class, repetition count, and similarity score.
+A [live app](https://huggingface.co/spaces/johnamit/motionbench) of the streamlit app is hosted on HuggingFace spaces via Docker. However this has bugs so i not yet complete.
 
-Please also find the [live demo](https://huggingface.co/spaces/johnamit/motionbench) of the streamlit app hosted on HuggingFace spaces via Docker. 
+The [demo videos](https://drive.google.com/drive/folders/1DHvUd81QcKR6cVVvB1eRToOgxgm29lU_?usp=sharing) show the app running locally via Streamlit (Option 2).
 
 ## Citations
 
