@@ -145,6 +145,61 @@ A [live app](https://huggingface.co/spaces/johnamit/motionbench) of the streamli
 
 The [demo videos](https://drive.google.com/drive/folders/1DHvUd81QcKR6cVVvB1eRToOgxgm29lU_?usp=sharing) show the app running locally via Streamlit (Option 2).
 
+
+## Model Performance Evaluation
+
+### Metric Legend
+- **Higher is better**: Accuracy, F1 (Macro), F1 (Weighted), Precision, Recall  
+- **Lower is better**: Mean Latency (ms), P95 Latency (ms), Peak Memory (MB), Model Size (MB)
+
+### Generalisation Evaluation
+This test evaluates how well each model recognises exercises on real-life home exercise videos it did not see during training. 
+
+It reports classification performance using **Accuracy**, **Macro F1** (class balance sensitivity), and **Weighted F1**/**Precision**/**Recall** (overall performance weighted by class frequency).
+
+| Model      | Accuracy | F1 (Macro) | F1 (Weighted) | Precision (Weighted) | Recall (Weighted) |
+| ---------- | -------: | ---------: | ------------: | -------------------: | ----------------: |
+| gru        |   0.9665 |     0.9672 |        0.9663 |               0.9675 |            0.9665 |
+| bilstm     |   0.9553 |     0.9575 |        0.9552 |               0.9582 |            0.9553 |
+| cnn_bilstm |   0.9553 |     0.9585 |        0.9552 |               0.9576 |            0.9553 |
+| lstm       |   0.9497 |     0.9521 |        0.9500 |               0.9518 |            0.9497 |
+| tcn        |   0.9497 |     0.9529 |        0.9495 |               0.9528 |            0.9497 |
+| st_gcn     |   0.8715 |     0.8801 |        0.8679 |               0.8937 |            0.8715 |
+
+**GRU** performs best on unseen home videos (highest Accuracy and Weighted F1), with **BiLSTM** and **CNN-BiLSTM** close behind.
+
+### Inference Benchmark (CPU)
+This test measures how fast each model runs on a CPU, which is useful for laptops, edge devices and low-cost deployment.
+
+It reports **mean latency** and **P95 latency** (worst-case tail behavior), plus **model size** in MB.
+
+| Model      | Device | Model Size (MB) | Mean Latency (ms) | P95 Latency (ms) |
+| ---------- | ------ | --------------: | ----------------: | ---------------: |
+| lstm       | cpu    |           0.778 |             0.226 |            0.253 |
+| bilstm     | cpu    |           0.839 |             0.359 |            0.406 |
+| cnn_bilstm | cpu    |           1.066 |             0.423 |            0.464 |
+| gru        | cpu    |           0.412 |             0.555 |            0.589 |
+| tcn        | cpu    |           1.175 |             0.820 |            0.850 |
+| st_gcn     | cpu    |           0.984 |             2.793 |            2.870 |
+
+**LSTM** is the fastest on CPU, while **GRU** has the smallest model size.  
+
+### Inference Benchmark (CUDA)
+This test measures how fast each model runs on a GPU (RTX 3090), where lower latency results in smoother live predictions. 
+
+It reports **mean latency** and **P95 latency**, **model size** and **peak GPU memory usage**, which helps choose a model that is both fast and resource-efficient.
+
+| Model      | Device | Model Size (MB) | Mean Latency (ms) | P95 Latency (ms) | Peak Memory (MB) |
+| ---------- | ------ | --------------: | ----------------: | ---------------: | ---------------: |
+| gru        | cuda   |           0.412 |             0.127 |            0.135 |           10.146 |
+| bilstm     | cuda   |           0.839 |             0.189 |            0.208 |           43.994 |
+| lstm       | cuda   |           0.778 |             0.221 |            0.229 |           10.992 |
+| cnn_bilstm | cuda   |           1.066 |             0.248 |            0.256 |           44.249 |
+| tcn        | cuda   |           1.175 |             0.360 |            0.377 |           10.554 |
+| st_gcn     | cuda   |           0.984 |             0.533 |            0.560 |           18.131 |
+
+**GRU** is fastest on GPU and also has one of the lowest memory footprints, making it the best real-time deployment candidate in this benchmark.
+
 ## Citations
 
 **Bidirectional Long Short-Term Memory (BiLSTM)**
